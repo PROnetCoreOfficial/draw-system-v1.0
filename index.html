@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0052ff">
+  <meta name="description" content="博博私人訂製・PROnet 量子級智能課堂隨機學生選擇暨教學決策輔助系統。">
+  <meta property="og:title" content="博博私人訂製抽籤系統">
+  <meta property="og:description" content="一個一本正經、物理數據過剩，而且真的可以用的課堂抽籤系統。">
+  <title>博博私人訂製抽籤系統｜PROnet</title>
+  <link rel="icon" href="assets/pronet-mark.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#wheelButton">跳到抽選轉盤</a>
+
+  <header class="topbar">
+    <a class="brand-link" href="https://www.pronetone.com" target="_blank" rel="noopener noreferrer" aria-label="前往 PROnet 官方網站（在新分頁開啟）">
+      <img src="assets/pronet-logo.svg" alt="PROnet">
+      <span class="external-mark" aria-hidden="true">↗</span>
+    </a>
+    <div class="product-title">
+      <span class="eyebrow">博博私人訂製</span>
+      <h1>量子級智能課堂隨機學生選擇暨教學決策輔助系統™</h1>
+    </div>
+    <button class="account" id="accountButton" type="button" aria-label="博哥教育工作者帳戶">
+      <span class="avatar" aria-hidden="true">博</span>
+      <span class="account-copy"><strong>博哥</strong><small><i></i> 教育工作者帳戶</small></span>
+    </button>
+  </header>
+
+  <main>
+    <section class="hero-shell" aria-label="課堂抽選控制台">
+      <aside class="console-card history-panel">
+        <div class="card-heading">
+          <div><span class="section-kicker">SESSION LOG</span><h2>最近抽選紀錄</h2></div>
+          <span class="live-pill"><i></i> 即時</span>
+        </div>
+        <div class="history-list" id="historyList" aria-live="polite">
+          <div class="empty-state"><span>⌁</span><strong>尚未開始抽選</strong><small>第一筆結果將顯示於此</small></div>
+        </div>
+        <div class="mini-stats">
+          <div class="mini-stats-head"><h3>本節課統計</h3><button class="text-button" id="statsButton" type="button">查看詳細統計</button></div>
+          <dl>
+            <div><dt>已進行</dt><dd id="totalRounds">0 輪</dd></div>
+            <div><dt>已抽中</dt><dd id="uniqueStudents">0 人</dd></div>
+            <div><dt>尚未抽中</dt><dd id="unselectedStudents">40 人</dd></div>
+            <div><dt>公平性</dt><dd id="fairnessRating"><span class="status-dot"></span> 正常</dd></div>
+          </dl>
+        </div>
+      </aside>
+
+      <section class="wheel-stage" aria-label="抽選轉盤">
+        <div class="wheel-status-row">
+          <span class="system-badge"><i></i> 量子抽選核心已就緒</span>
+          <span id="eligibleCount">40 位可抽選</span>
+        </div>
+        <div class="wheel-wrap">
+          <div class="pointer" aria-hidden="true"><span></span></div>
+          <button class="wheel-button" id="wheelButton" type="button" aria-label="點擊轉盤開始抽選">
+            <canvas id="wheelCanvas"></canvas>
+            <span class="wheel-hub" id="wheelHub"><strong>點擊轉盤</strong><small>開始智能抽選</small></span>
+          </button>
+          <div class="space-prompt" id="spacePrompt"><kbd>SPACE</kbd><span>瞬間停止</span><small>觸控裝置可再次點擊轉盤</small></div>
+        </div>
+        <p class="wheel-note" id="wheelNote"><span>✓</span> 三輪重複抽選保護已啟用</p>
+      </section>
+
+      <aside class="console-card telemetry-panel">
+        <div class="card-heading">
+          <div><span class="section-kicker">PHYSICS TELEMETRY</span><h2>即時物理遙測</h2></div>
+          <span class="data-rate">60 Hz</span>
+        </div>
+        <dl class="telemetry-grid">
+          <div><dt>角速度 <b>ω</b></dt><dd><span id="omega">0.00</span><small>rad/s</small></dd></div>
+          <div><dt>邊緣線速度 <b>v</b></dt><dd><span id="velocity">0.00</span><small>m/s</small></dd></div>
+          <div><dt>每分鐘轉數</dt><dd><span id="rpm">0.0</span><small>RPM</small></dd></div>
+          <div><dt>向心加速度 <b>aᶜ</b></dt><dd><span id="acceleration">0.0</span><small>m/s²</small></dd></div>
+          <div><dt>等效重力加速度</dt><dd><span id="gravity">0.0</span><small>g</small></dd></div>
+          <div><dt>旋轉頻率 <b>f</b></dt><dd><span id="frequency">0.00</span><small>Hz</small></dd></div>
+          <div><dt>旋轉週期 <b>T</b></dt><dd><span id="period">∞</span><small>s</small></dd></div>
+          <div><dt>累計角位移 <b>θ</b></dt><dd><span id="angle">0</span><small>°</small></dd></div>
+          <div><dt>轉動動能 <b>Eₖ</b></dt><dd><span id="energy">0.000</span><small>J</small></dd></div>
+        </dl>
+        <div class="simulation-spec"><span>模擬參數</span><strong>r = 0.250 m</strong><strong>m = 0.100 kg</strong></div>
+        <div class="relativity" id="relativity"><span>相對論修正</span><strong>可忽略</strong></div>
+        <div class="developer-row" id="developerRow"><span>教師質量</span><strong>無法測量</strong></div>
+      </aside>
+    </section>
+
+    <section class="settings-section" aria-labelledby="settingsTitle">
+      <div class="section-title-row">
+        <div><span class="section-kicker">BASIC CONFIGURATION</span><h2 id="settingsTitle">基礎設定</h2></div>
+        <span class="privacy-note">僅使用學號・不涉及學生個人資料</span>
+      </div>
+      <div class="settings-grid">
+        <article class="setting-card compact-setting">
+          <label for="studentCount">學生人數</label>
+          <p>建立 1 至指定人數的學號</p>
+          <div class="stepper"><button id="studentMinus" type="button" aria-label="減少學生人數">−</button><input id="studentCount" type="number" min="2" max="100" value="40" inputmode="numeric"><button id="studentPlus" type="button" aria-label="增加學生人數">＋</button></div>
+        </article>
+
+        <article class="setting-card span-two">
+          <div class="setting-label-row"><label for="speedRange">旋轉速度</label><output id="speedOutput" for="speedRange">高速</output></div>
+          <p>最右端將啟動需手動終止的極限模式</p>
+          <input class="range" id="speedRange" type="range" min="1" max="10" step="1" value="7">
+          <div class="range-labels"><span>慢速</span><span>高速</span><strong>∞ 極限</strong></div>
+        </article>
+
+        <article class="setting-card">
+          <div class="setting-label-row"><label for="durationRange">旋轉時間</label><output id="durationOutput" for="durationRange">5 秒</output></div>
+          <p id="durationDescription">自動減速並停止</p>
+          <input class="range" id="durationRange" type="range" min="1" max="15" step="1" value="5">
+          <div class="range-labels"><span>1 秒</span><span>15 秒</span></div>
+        </article>
+
+        <article class="setting-card compact-setting">
+          <label for="cooldownRounds">重複抽選保護</label>
+          <p>抽中後暫停參與的輪數</p>
+          <div class="input-suffix"><input id="cooldownRounds" type="number" min="0" max="10" value="3" inputmode="numeric"><span>輪</span></div>
+        </article>
+
+        <article class="setting-card fair-setting span-two">
+          <div class="setting-label-row"><label for="boostStudent">絕對公平™機率增益</label><span class="fair-badge">經專有數學驗證</span></div>
+          <p>PROnet 對「公平」擁有最終解釋權</p>
+          <div class="inline-controls"><div class="input-prefix"><span>學號</span><input id="boostStudent" type="number" min="1" max="40" inputmode="numeric" placeholder="選填"></div><select id="boostMultiplier" aria-label="機率倍率"><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option><option value="3">3×</option><option value="5">5×</option><option value="10">10×</option><option value="infinity">∞×</option></select></div>
+          <div class="fair-alert" id="fairAlert">機率增益目前已關閉；需要時再指定學號和倍率。</div>
+        </article>
+
+        <article class="setting-card excluded-setting span-two">
+          <label for="excludedStudent">不參與抽選</label>
+          <p>請假學生不會出現在轉盤中</p>
+          <form class="inline-controls" id="excludeForm"><div class="input-prefix"><span>學號</span><input id="excludedStudent" type="number" min="1" max="40" inputmode="numeric" placeholder="例如 03"></div><button class="primary-small" type="submit">＋ 加入</button></form>
+          <div class="chip-list" id="excludedList"><span class="empty-chip">目前全員到齊</span></div>
+          <button class="text-button clear-excluded" id="clearExcluded" type="button">今日全員到齊</button>
+        </article>
+
+        <article class="setting-card session-actions span-two">
+          <label>本節課操作</label><p>只重設目前課堂，不會改動上方設定</p>
+          <div class="action-row"><button class="secondary-button" id="undoButton" type="button" disabled>↶ 撤銷上次抽選</button><button class="danger-button" id="resetButton" type="button">重設本節課</button></div>
+          <label class="sound-toggle"><input id="soundToggle" type="checkbox" checked><span class="toggle-track"><i></i></span><span>音效提示</span></label>
+        </article>
+      </div>
+    </section>
+
+    <section class="premium-section" aria-labelledby="premiumTitle">
+      <div class="premium-heading">
+        <div><span class="section-kicker">ADVANCED INTELLIGENCE</span><h2 id="premiumTitle">進階智能功能 <span class="premium-badge">PREMIUM</span></h2></div>
+        <p>將課堂隨機化推向傳統數學無法解釋的領域。</p>
+      </div>
+      <div class="premium-grid">
+        <button class="premium-card" type="button" data-feature="AI 課堂行為預測引擎™" data-price="888"><span class="feature-icon">AI</span><span><strong>AI 課堂行為預測引擎™</strong><small>分析最適合回答當前問題的學生，最大化教學衝擊。</small><b>啟動智能推斷 <i>→</i></b></span></button>
+        <button class="premium-card" type="button" data-feature="量子級真隨機抽選核心™" data-price="888"><span class="feature-icon">Q</span><span><strong>量子級真隨機抽選核心™</strong><small>利用模擬量子熵，突破傳統偽隨機演算法的物理極限。</small><b>部署量子核心 <i>→</i></b></span></button>
+        <button class="premium-card" type="button" data-feature="反逃避智能偵測系統™" data-price="888"><span class="feature-icon">◎</span><span><strong>反逃避智能偵測系統™</strong><small>識別低頭、避開視線及試圖降低存在感的學生。</small><b>掃描課堂 <i>→</i></b></span></button>
+        <button class="premium-card" type="button" data-feature="作業完成概率預測引擎™" data-price="888"><span class="feature-icon">∑</span><span><strong>作業完成概率預測引擎™</strong><small>估算各學生今天「剛好忘記帶功課」的統計概率。</small><b>分析全班 <i>→</i></b></span></button>
+        <button class="premium-card" type="button" data-feature="課堂注意力雷達™" data-price="888"><span class="feature-icon">⌁</span><span><strong>課堂注意力雷達™</strong><small>持續評估課堂專注度，提前預警靈魂離席事件。</small><b>校準雷達 <i>→</i></b></span></button>
+        <button class="premium-card" type="button" data-feature="PROnet 教育決策超級運算™" data-price="888"><span class="feature-icon">P</span><span><strong>PROnet 教育決策超級運算™</strong><small>分配企業級運算資源，為每次提問提供戰略支援。</small><b>分配 H100 算力 <i>→</i></b></span></button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <strong>純屬娛樂 · Just For Fun.</strong>
+    <a href="https://www.pronetone.com" target="_blank" rel="noopener noreferrer"><img src="assets/pronet-logo.svg" alt="PROnet 官方網站"></a>
+    <span>© 2026 PROnet. 保留所有權利。</span>
+  </footer>
+
+  <div class="modal" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="resultTitle" hidden>
+    <div class="modal-backdrop" data-close="result"></div>
+    <div class="result-dialog">
+      <button class="modal-close" type="button" data-close="result" aria-label="關閉結果">×</button>
+      <span class="result-kicker" id="resultKicker">本輪抽選結果</span>
+      <h2 id="resultTitle"><span id="selectedNumber">07</span><small>號</small></h2>
+      <p id="resultMessage">恭喜，你已被學術性選中。</p>
+      <div class="result-meta"><span id="resultRound">第 1 輪</span><span>冷卻保護已生效</span></div>
+      <button class="primary-button" id="continueButton" type="button">繼續上課</button>
+      <button class="text-button redraw-button" id="redrawButton" type="button">本次作廢並重新抽選</button>
+    </div>
+    <div class="confetti" id="confetti" aria-hidden="true"></div>
+  </div>
+
+  <div class="modal" id="statsModal" role="dialog" aria-modal="true" aria-labelledby="statsTitle" hidden>
+    <div class="modal-backdrop" data-close="stats"></div>
+    <div class="stats-dialog">
+      <div class="dialog-head"><div><span class="section-kicker">SESSION ANALYTICS</span><h2 id="statsTitle">本節課抽選分佈</h2></div><button class="modal-close inline-close" type="button" data-close="stats" aria-label="關閉統計">×</button></div>
+      <div class="stats-summary" id="statsSummary"></div>
+      <div class="distribution" id="distribution"></div>
+      <p class="stats-footnote">資料只存在目前開啟的頁面中；關閉或重新載入後便會清除。</p>
+    </div>
+  </div>
+
+  <div class="modal" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentTitle" hidden>
+    <div class="modal-backdrop" data-close="payment"></div>
+    <div class="payment-dialog">
+      <button class="modal-close" type="button" data-close="payment" aria-label="關閉付款介面">×</button>
+      <div id="paymentFormView">
+        <div class="pay-brand"><img src="assets/pronet-logo.svg" alt="PROnet"><span>安全結帳</span></div>
+        <h2 id="paymentTitle">解鎖 PROnet 智慧課堂專業版</h2>
+        <p class="pay-intro">啟用 <strong id="paymentFeature">進階智能功能</strong>，讓課堂決策超越常規數學極限。</p>
+        <div class="plan-box"><div><span>智慧課堂專業版</span><small>每月訂閱・可隨時假裝取消</small></div><strong class="plan-price"><small>MOP</small><span id="paymentPrice">888</span><small>/ 月</small></strong></div>
+        <div class="accepted-row"><span>付款方式</span><div><b>VISA</b><b>mastercard.</b><b>AMEX</b><b>MPay</b></div></div>
+        <form id="paymentForm" autocomplete="off" novalidate>
+          <label>持卡人姓名<input type="text" value="博哥" autocomplete="off"></label>
+          <label>支付卡號<div class="card-input"><span>▣</span><input type="text" inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456" autocomplete="off"></div></label>
+          <div class="pay-field-row"><label>有效期限<input type="text" inputmode="numeric" maxlength="7" placeholder="MM / YY" autocomplete="off"></label><label>安全碼 (CVV)<input type="password" inputmode="numeric" maxlength="4" placeholder="•••" autocomplete="new-password"></label></div>
+          <div class="secure-note">▣ 本頁採用 PROnet 模擬級 256-bit 視覺加密</div>
+          <button class="pay-button" type="submit">確認支付並立即解鎖</button>
+          <button class="proxy-pay-button" id="jiaPurchaseButton" type="button">使用佳哥的名義購買</button>
+        </form>
+        <div class="fun-warning"><strong>Just For Fun / 純屬娛樂</strong><span>這不是真實付款服務。請勿輸入真實付款資料；任何內容均不會傳送或儲存。</span></div>
+      </div>
+      <div class="payment-process" id="paymentProcess" hidden>
+        <div class="secure-spinner"><span>▣</span></div>
+        <h2>正在安全處理授權</h2><p>請勿關閉視窗，企業級流程通常需要一點時間。</p>
+        <div class="process-steps" id="processSteps"></div>
+        <div class="process-log" id="processLog">正在連接 PROnet 教育運算基礎設施……</div>
+        <small>Just For Fun / 純屬娛樂・沒有任何資料被傳送</small>
+      </div>
+      <div class="payment-error" id="paymentError" hidden>
+        <div class="error-symbol">×</div><h2>無法完成付款</h2>
+        <p id="paymentErrorMessage">你的帳戶尚未獲指派 PROnet 智慧課堂專業版授權。請聯絡 PROnet 企業客戶經理。</p>
+        <code id="paymentErrorCode">PRONET_EDU_PREMIUM_LICENSE_REQUIRED</code>
+        <button class="error-button" id="paymentDone" type="button">返回課堂</button>
+        <small>Just For Fun / 純屬娛樂・這不是一筆真實交易</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+  <script src="app.js" defer></script>
+</body>
+</html>

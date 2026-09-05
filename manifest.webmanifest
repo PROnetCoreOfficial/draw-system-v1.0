@@ -1,0 +1,14 @@
+{
+  "name": "博博私人訂製抽籤系統",
+  "short_name": "博博抽籤",
+  "description": "PROnet 量子級智能課堂隨機學生選擇暨教學決策輔助系統。",
+  "lang": "zh-Hant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f9",
+  "theme_color": "#0052ff",
+  "icons": [
+    { "src": "assets/pronet-mark.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
